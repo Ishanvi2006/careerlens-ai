@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CareerLens AI</title>
+</head>
+<body>
+
+    <h2>CareerLens AI</h2>
+
+    <input type="file" id="resume"><br><br>
+
+    <textarea id="jd" placeholder="Paste Job Description here..." rows="6" cols="50"></textarea><br><br>
+
+    <button onclick="handleSubmit()">Analyze</button>
+
+    <h3>Match Score: <span id="score"></span>%</h3>
+
+    <h3>Matched Skills:</h3>
+    <ul id="matched"></ul>
+
+    <h3>Missing Skills:</h3>
+    <ul id="missing"></ul>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
