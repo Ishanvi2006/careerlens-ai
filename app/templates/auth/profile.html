@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}— My Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold" style="color:#1a3c6e">👤 My Profile</h2>
+            <a href="{{ url_for('auth.logout') }}"
+               class="btn btn-outline-danger btn-sm">Logout</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} py-2">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="chart-card">
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" name="full_name" class="form-control"
+                               value="{{ user.full_name }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Email</label>
+                        <input type="email" class="form-control"
+                               value="{{ user.email }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone</label>
+                        <input type="text" name="phone" class="form-control"
+                               value="{{ user.phone or '' }}"
+                               placeholder="98XXXXXXXX">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">College</label>
+                        <input type="text" name="college" class="form-control"
+                               value="{{ user.college or '' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Semester</label>
+                        <select name="semester" class="form-select">
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}"
+                                {% if user.semester == i %}selected{% endif %}>
+                                Sem {{ i }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Branch</label>
+                        <input type="text" name="branch" class="form-control"
+                               value="{{ user.branch or '' }}">
+                    </div>
+                    <div class="col-md-6">
+    <label class="form-label fw-bold">Target Role</label>
+    <input type="text"
+           id="target_role"
+           name="target_role"
+           class="form-control"
+           value="{{ user.target_role or '' }}"
+           placeholder="e.g. Data Analyst"
+           autocomplete="off">
+    <small class="text-muted">
+        Current value: "{{ user.target_role or 'not set' }}"
+    </small>
+</div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 px-4">
+                    Save changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <div class="card stat-card text-center p-3"
+                     style="background:linear-gradient(135deg,#1a3c6e,#2563a8)">
+                    <div class="text-white">
+                        <div style="font-size:1.5rem">💼</div>
+                        <h4 class="fw-bold text-white mb-0">
+                            {{ user.applications|length }}
+                        </h4>
+                        <small>Applications</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card text-center p-3"
+                     style="background:linear-gradient(135deg,#1e7a4a,#27ae60)">
+                    <div class="text-white">
+                        <div style="font-size:1.5rem">🛠️</div>
+                        <h4 class="fw-bold text-white mb-0">
+                            {{ user.skills|length }}
+                        </h4>
+                        <small>Skills Saved</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card text-center p-3"
+                     style="background:linear-gradient(135deg,#8b2fc9,#a855f7)">
+                    <div class="text-white">
+                        <div style="font-size:1.5rem">🎯</div>
+                        <h4 class="fw-bold text-white mb-0"
+                            style="font-size:1rem">
+                            {{ user.target_role or '—' }}
+                        </h4>
+                        <small>Target Role</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}— Domain Recommender{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h2 class="fw-bold" style="color:#1a3c6e"> Domain & Role Recommender</h2>
+    <p class="text-muted">Enter your skills and find which career domains suit you best</p>
+</div>
+
+<!-- Input Form -->
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <div class="chart-card">
+            <form method="POST">
+                <label class="fw-bold mb-2">
+                    🛠️ Enter Your Skills
+                    <small class="text-muted fw-normal">(comma separated)</small>
+                </label>
+                <input type="text" name="skills" class="form-control form-control-lg mb-3"
+                       placeholder="e.g. python, sql, excel, power bi, machine learning"
+                       value="{{ skills_input or '' }}">
+                <button type="submit" class="btn btn-primary w-100 py-2 fs-5">
+                    🔍 Find Best Domains For Me
+                </button>
+            </form>
+            {% if error %}
+            <div class="alert alert-danger mt-3">❌ {{ error }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Results -->
+{% if recommendations %}
+<h4 class="section-title"> Your Top Domain Matches</h4>
+
+{% for rec in recommendations %}
+<div class="chart-card mb-3">
+    <div class="row align-items-center">
+
+        <!-- Rank & Domain -->
+        <div class="col-md-1 text-center">
+            <div style="width:45px; height:45px; border-radius:50%;
+                        background:{% if loop.index == 1 %}#1a3c6e{% elif loop.index == 2 %}#2563a8{% else %}#60a5fa{% endif %};
+                        display:flex; align-items:center; justify-content:center; margin:0 auto">
+                <span class="fw-bold text-white">{{ loop.index }}</span>
+            </div>
+        </div>
+
+        <!-- Domain Info -->
+        <div class="col-md-4">
+            <h5 class="fw-bold mb-1" style="color:#1a3c6e">
+                {{ rec.domain | title }}
+            </h5>
+            <small class="text-muted">
+                <i class="bi bi-briefcase"></i> {{ rec.job_count }} live jobs available
+            </small>
+        </div>
+
+        <!-- Match Score Bar -->
+        <div class="col-md-4">
+            <div class="d-flex justify-content-between mb-1">
+                <small class="fw-bold">Match Score</small>
+                <small class="fw-bold"
+                    style="color:{% if rec.score >= 60 %}#27ae60{% elif rec.score >= 30 %}#f39c12{% else %}#e74c3c{% endif %}">
+                    {{ rec.score }}%
+                </small>
+            </div>
+            <div class="progress" style="height:12px; border-radius:10px">
+                <div class="progress-bar"
+                     style="width:{{ rec.score }}%;
+                            background:{% if rec.score >= 60 %}#27ae60{% elif rec.score >= 30 %}#f39c12{% else %}#e74c3c{% endif %};
+                            border-radius:10px">
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Skills & Action -->
+        <div class="col-md-3 text-end">
+            <div class="mb-2">
+                {% for skill in rec.top_skills %}
+                <span class="badge me-1" style="background:#e8f0fe; color:#1a3c6e">
+                    {{ skill }}
+                </span>
+                {% endfor %}
+            </div>
+            <a href="/skillgap?domain={{ rec.domain }}&skills={{ skills_input }}"
+               class="btn btn-sm btn-outline-primary">
+                View Skill Gap →
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endfor %}
+
+<!-- Top Matching Jobs -->
+<h4 class="section-title mt-4"> Live Jobs For Your Top Match</h4>
+<div class="chart-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead style="background:#f0f4f8">
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Apply</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set top_domain = recommendations[0].domain %}
+                {% for job in jobs_for_top_domain %}
+                <tr>
+                    <td><strong>{{ job.title[:55] }}</strong></td>
+                    <td>{{ job.company }}</td>
+                    <td><i class="bi bi-geo-alt text-danger"></i>
+                        {{ job.location or 'India' }}</td>
+                    <td>
+                        <a href="{{ job.job_url }}" target="_blank"
+                           class="btn btn-sm btn-outline-primary">
+                            Apply →
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

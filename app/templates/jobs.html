@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}— All Jobs{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold" style="color:#1a3c6e">💼 All Jobs</h2>
+    <span class="text-muted">{{ jobs.total }} jobs found</span>
+</div>
+
+<!-- Filters -->
+<div class="chart-card mb-4">
+    <form method="GET" class="row g-3">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control"
+                   placeholder="🔍 Search job title..."
+                   value="{{ search }}">
+        </div>
+        <div class="col-md-4">
+            <select name="domain" class="form-select">
+                <option value="">All Domains</option>
+                {% for d in domains %}
+                <option value="{{ d.domain }}"
+                    {% if d.domain == selected_domain %}selected{% endif %}>
+                    {{ d.domain }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+</div>
+
+<!-- Jobs Table -->
+<div class="chart-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead style="background:#f0f4f8">
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Experience</th>
+                    <th>Salary</th>
+                    <th>Domain</th>
+                    <th>Apply</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs.items %}
+                <tr>
+                    <td><strong>{{ job.title[:55] }}</strong></td>
+                    <td>{{ job.company }}</td>
+                    <td><i class="bi bi-geo-alt text-danger"></i> {{ job.location or 'India' }}</td>
+                    <td>{{ job.experience or '—' }}</td>
+                    <td>
+                        {% if job.salary_min %}
+                            ₹{{ job.salary_min }}–{{ job.salary_max }} LPA
+                        {% else %}
+                            <span class="text-muted">Not disclosed</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="job-badge">{{ job.domain }}</span></td>
+                    <td>
+                        {% if job.job_url %}
+                        <a href="{{ job.job_url }}" target="_blank"
+                           class="btn btn-sm btn-outline-primary">
+                            Apply →
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% if jobs.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ jobs.prev_num }}&domain={{ selected_domain }}&search={{ search }}">Previous</a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ jobs.page }} of {{ jobs.pages }}</span>
+            </li>
+            {% if jobs.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ jobs.next_num }}&domain={{ selected_domain }}&search={{ search }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}— Resume Analyzer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color:#1a3c6e">📄 AI Resume Analyzer</h2>
+            <p class="text-muted">Upload your resume and get an instant ATS score + improvement tips</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">❌ {{ error }}</div>
+        {% endif %}
+
+        <div class="chart-card">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-4 text-center">
+                    <div style="border: 2px dashed #2563a8; border-radius:16px; padding:40px; background:#f8faff; cursor:pointer"
+                         onclick="document.getElementById('resumeFile').click()">
+                        <div style="font-size:3rem">📂</div>
+                        <h5 class="mt-2" style="color:#2563a8">Click to upload your resume</h5>
+                        <p class="text-muted mb-0">Supports PDF and DOCX • Max 5MB</p>
+                        <p id="fileName" class="mt-2 fw-bold text-success"></p>
+                    </div>
+                    <input type="file" id="resumeFile" name="resume"
+                           accept=".pdf,.docx" class="d-none"
+                           onchange="document.getElementById('fileName').textContent = this.files[0].name">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fs-5">
+                    🔍 Analyze My Resume
+                </button>
+            </form>
+        </div>
+
+        <!-- What We Analyze -->
+        <div class="chart-card mt-4">
+            <h5>🔬 What We Analyze</h5>
+            <div class="row g-3 mt-1">
+                <div class="col-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size:1.5rem">🛠️</span>
+                        <div><strong>Skills Detection</strong><br><small class="text-muted">50+ technical skills</small></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size:1.5rem">📊</span>
+                        <div><strong>ATS Score</strong><br><small class="text-muted">0–100 compatibility</small></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size:1.5rem">🔍</span>
+                        <div><strong>Section Check</strong><br><small class="text-muted">8 key sections</small></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size:1.5rem">💡</span>
+                        <div><strong>Suggestions</strong><br><small class="text-muted">Actionable fixes</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

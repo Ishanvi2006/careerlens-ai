@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}— Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="chart-card">
+
+            <div class="text-center mb-4">
+                <h3 class="fw-bold" style="color:#1a3c6e">Create your account</h3>
+                <p class="text-muted">Join CareerLens AI — it's free</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} py-2">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" name="full_name" class="form-control"
+                               placeholder="Aryan Sharma" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Email</label>
+                        <input type="email" name="email" class="form-control"
+                               placeholder="aryan@gmail.com" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password" class="form-control"
+                               placeholder="Min 8 characters" required>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">College Name</label>
+                        <input type="text" name="college" class="form-control"
+                               placeholder="e.g. RGPV Bhopal">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Semester</label>
+                        <select name="semester" class="form-select">
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}"
+                                {% if i == 6 %}selected{% endif %}>
+                                Sem {{ i }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Branch</label>
+                        <select name="branch" class="form-select">
+                            <option>Computer Science Engineering</option>
+                            <option>Information Technology</option>
+                            <option>Electronics & Communication</option>
+                            <option>Mechanical Engineering</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-3">
+                    Create account
+                </button>
+            </form>
+
+            <hr>
+            <p class="text-center text-muted mb-0">
+                Already have an account?
+                <a href="{{ url_for('auth.login') }}"
+                   style="color:#2563a8">Sign in</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

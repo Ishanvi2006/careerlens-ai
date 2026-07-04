@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}— Skill Gap Finder{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <h2 class="fw-bold" style="color:#1a3c6e">🔍 Skill Gap Finder</h2>
+    <p class="text-muted">See exactly what skills you need for your target role</p>
+</div>
+
+<!-- Input Form -->
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <div class="chart-card">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">🛠️ Your Current Skills</label>
+                    <input type="text" name="skills" class="form-control"
+                           placeholder="e.g. python, sql, excel, power bi"
+                           value="{{ skills_input or request.args.get('skills', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">🎯 Target Domain</label>
+                    <select name="domain" class="form-select">
+                        <option value="">Select your target role...</option>
+                        {% for domain in domains %}
+                        <option value="{{ domain }}"
+                            {% if domain == target_domain or domain == request.args.get('domain') %}
+                                selected
+                            {% endif %}>
+                            {{ domain | title }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    🔍 Analyze My Skill Gap
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Results -->
+{% if matched is defined and missing is defined %}
+<div class="row g-4">
+
+    <!-- Skills You Have -->
+    <div class="col-md-6">
+        <div class="chart-card">
+            <h5 style="color:#27ae60">
+                ✅ Skills You Have ({{ matched|length }})
+            </h5>
+            {% if matched %}
+                {% for skill in matched %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold">{{ skill.name }}</span>
+                    <div style="flex:1; margin:0 12px">
+                        <div class="progress" style="height:8px; border-radius:10px">
+                            <div class="progress-bar bg-success"
+                                 style="width:{{ skill.percentage }}%; border-radius:10px">
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-success fw-bold">{{ skill.percentage }}%</small>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">None of your skills match this domain yet</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Skills You're Missing -->
+    <div class="col-md-6">
+        <div class="chart-card">
+            <h5 style="color:#e74c3c">
+                ❌ Skills You Need ({{ missing|length }})
+            </h5>
+            {% if missing %}
+                {% for skill in missing[:10] %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold">{{ skill.name }}</span>
+                    <div style="flex:1; margin:0 12px">
+                        <div class="progress" style="height:8px; border-radius:10px">
+                            <div class="progress-bar bg-danger"
+                                 style="width:{{ skill.percentage }}%; border-radius:10px">
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-danger fw-bold">{{ skill.percentage }}%</small>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-success fw-bold">
+                    🎉 You have all required skills for this domain!
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Learning Resources -->
+{% if missing %}
+<div class="chart-card mt-4">
+    <h5>📚 Recommended Free Learning Resources</h5>
+    <div class="row g-3 mt-1">
+        {% for skill in missing[:4] %}
+        <div class="col-md-3">
+            <div style="border:1px solid #e0e0e0; border-radius:12px; padding:16px">
+                <h6 class="fw-bold" style="color:#1a3c6e">{{ skill.name | title }}</h6>
+                <div class="d-flex flex-column gap-1">
+                    <a href="https://www.youtube.com/results?search_query={{ skill.name }}+tutorial"
+                       target="_blank" class="btn btn-sm btn-outline-danger">
+                        ▶ YouTube
+                    </a>
+                    <a href="https://www.coursera.org/search?query={{ skill.name }}"
+                       target="_blank" class="btn btn-sm btn-outline-primary">
+                        🎓 Coursera
+                    </a>
+                    <a href="https://nptel.ac.in/course.html"
+                       target="_blank" class="btn btn-sm btn-outline-success">
+                        📖 NPTEL
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

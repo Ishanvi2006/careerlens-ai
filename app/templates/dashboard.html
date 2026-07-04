@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}— Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold" style="color:#1a3c6e">Labour Market Intelligence</h2>
+        <p class="text-muted mb-0">Real-time insights from Indian job market</p>
+    </div>
+    <span class="badge bg-success fs-6">🟢 Live Data</span>
+</div>
+
+<!-- ── STAT CARDS ── -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3" style="background:linear-gradient(135deg,#1a3c6e,#2563a8)">
+            <div class="text-white">
+                <div style="font-size:2rem"></div>
+                <h3 class="fw-bold text-white mb-0">{{ total_jobs }}</h3>
+                <small>Jobs Scraped</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3" style="background:linear-gradient(135deg,#1e7a4a,#27ae60)">
+            <div class="text-white">
+                <div style="font-size:2rem"></div>
+                <h3 class="fw-bold text-white mb-0">{{ total_skills }}</h3>
+                <small>Unique Skills</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3" style="background:linear-gradient(135deg,#8b2fc9,#a855f7)">
+            <div class="text-white">
+                <div style="font-size:2rem"></div>
+                <h3 class="fw-bold text-white mb-0">{{ total_companies }}</h3>
+                <small>Companies Hiring</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3" style="background:linear-gradient(135deg,#c45c00,#f97316)">
+            <div class="text-white">
+                <div style="font-size:2rem"></div>
+                <h3 class="fw-bold text-white mb-0">{{ total_domains }}</h3>
+                <small>Job Domains</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── CHARTS ROW 1 ── -->
+<div class="row g-4 mb-4">
+    <!-- Top Skills Bar Chart -->
+    <div class="col-md-7">
+        <div class="chart-card">
+            <h5> Top 10 In-Demand Skills</h5>
+            <canvas id="skillsChart" height="280"></canvas>
+        </div>
+    </div>
+    <!-- Domain Pie Chart -->
+    <div class="col-md-5">
+        <div class="chart-card">
+            <h5> Jobs by Domain</h5>
+            <canvas id="domainChart" height="280"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ── CHARTS ROW 2 ── -->
+<div class="row g-4 mb-4">
+    <!-- Top Companies -->
+    <div class="col-md-12">
+        <div class="chart-card">
+            <h5> Top 10 Hiring Companies</h5>
+            <canvas id="companiesChart" height="120"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ── LATEST JOBS TABLE ── -->
+<div class="chart-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0"> Latest Job Listings</h5>
+        <a href="/jobs" class="btn btn-sm btn-primary">View All Jobs →</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead style="background:#f0f4f8">
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Domain</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in latest_jobs %}
+                <tr>
+                    <td><strong>{{ job.title[:50] }}</strong></td>
+                    <td>{{ job.company }}</td>
+                    <td><i class="bi bi-geo-alt text-danger"></i> {{ job.location or 'India' }}</td>
+                    <td><span class="job-badge">{{ job.domain }}</span></td>
+                    <td>
+                        {% if job.salary_min %}
+                            ₹{{ job.salary_min }}–{{ job.salary_max }} LPA
+                        {% else %}
+                            <span class="text-muted">Not disclosed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Fetch & Render Skills Chart ──
+fetch('/api/skills').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('skillsChart'), {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Jobs Requiring Skill',
+                data: data.values,
+                backgroundColor: [
+                    '#1a3c6e','#2563a8','#3b82f6','#60a5fa',
+                    '#93c5fd','#1e7a4a','#27ae60','#2ecc71',
+                    '#8b2fc9','#a855f7'
+                ],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+
+// ── Fetch & Render Domain Pie Chart ──
+fetch('/api/domains').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('domainChart'), {
+        type: 'doughnut',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.values,
+                backgroundColor: [
+                    '#1a3c6e','#2563a8','#1e7a4a','#8b2fc9',
+                    '#c45c00','#e11d48','#0891b2','#ca8a04'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15 } }
+            }
+        }
+    });
+});
+
+// ── Fetch & Render Companies Chart ──
+fetch('/api/companies').then(r => r.json()).then(data => {
+    new Chart(document.getElementById('companiesChart'), {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Job Openings',
+                data: data.values,
+                backgroundColor: '#2563a8',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
